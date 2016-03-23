@@ -26,16 +26,17 @@ def learning(soinn, x_train, y_train):
             print('Processing {0}th data.'.format(i))
         soinn.input_signal(data_x)
 
-def evaluate(soinn, x_test, y_test):
+def evaluate(soinn, x_test, y_test, N_test=2000):
     #N_test = y_test.size
-    N_test = 2000
     answer_dict = defaultdict(list)
+    indexes = [i for i in range(len(soinn.nodes))]
+    similarity_thresholds = soinn.calculate_similarity_thresholds(indexes)
     for i in range(N_test):
         winner = soinn.input_signal(x_test[i], learning=False)
         answer_dict[winner[0]].append(y_test[i])
-    print(answer_dict)
-    for value in answer_dict.values():
-        pass
+    for node_num, value in answer_dict.items():
+        print('node[{0}] radius: {1}'.format(node_num, similarity_thresholds[node_num]))
+        print('values:{0}'.format(value))
 
 def split_dataset(dataset, N=4000):
     perm = np.random.permutation(len(dataset['target']))
