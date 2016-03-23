@@ -5,6 +5,7 @@
 
 import numpy as np
 from scipy.sparse import dok_matrix
+import util
 
 
 class Soinn(object):
@@ -46,7 +47,7 @@ class Soinn(object):
         if not learning:
             return winner
 
-        sim_thresholds = self.__calculate_similarity_thresholds(winner)
+        sim_thresholds = self.calculate_similarity_thresholds(winner)
         if dists[0] > sim_thresholds[0] and dists[1] > sim_thresholds[1]:
             self.__add_node(signal)
         else:
@@ -83,19 +84,23 @@ class Soinn(object):
         self.winning_times.append(1)
         self.adjacent_mat.resize((n + 1, n + 1))
 
-    def __find_nearest_nodes(self, num, signal):
+    def __find_nearest_nodes(self, num, signal, mahar=True):
+        #if mahar: return self.__find_nearest_nodes_by_mahar(num, signal)
         n = self.nodes.shape[0]
         indexes = [0.0] * num
         sq_dists = [0.0] * num
-        D = np.sum((self.nodes - np.asarray([signal] * n))**2, 1)
-        #D = np.sum((self.nodes - np.stack([signal for i in range(n)], 0))**2, 1)
+        D = util.calc_distance(self.nodes, np.asarray([signal] * n))
         for i in range(num):
             indexes[i] = np.nanargmin(D)
             sq_dists[i] = D[indexes[i]]
             D[indexes[i]] = float('nan')
         return indexes, sq_dists
 
-    def __calculate_similarity_thresholds(self, node_indexes):
+    def __find_nearest_nodes_by_mahar(self, num, signal):
+        indexes, sq_dists = util.calc_mahalanobis(self.nodes, signal, 2)
+        return indexes, sq_dists
+
+    def calculate_similarity_thresholds(self, node_indexes):
         sim_thresholds = []
         for i in node_indexes:
             pals = self.adjacent_mat[i, :]
@@ -106,7 +111,7 @@ class Soinn(object):
                 pal_indexes = []
                 for k in pals.keys():
                     pal_indexes.append(k[1])
-                sq_dists = np.sum((self.nodes[pal_indexes] - np.stack([self.nodes[i] for j in range(len(pal_indexes))]))**2, 1)
+                sq_dists = util.calc_distance(self.nodes[pal_indexes], np.asarray([self.nodes[i]] * len(pal_indexes)))
                 sim_thresholds.append(np.max(sq_dists))
         return sim_thresholds
 

@@ -149,8 +149,8 @@ class TestSoinn(unittest.TestCase):
     def test_calculate_similarity_thresholds(self):
         self.soinn.adjacent_mat[0, 2:] = 1
         self.soinn.adjacent_mat[2:, 0] = 1
-        self.assertEqual(self.soinn._Soinn__calculate_similarity_thresholds([0]), [2])
-        self.assertEqual(self.soinn._Soinn__calculate_similarity_thresholds([0, 1]), [2, 1])
+        self.assertEqual(self.soinn.calculate_similarity_thresholds([0]), [2])
+        self.assertEqual(self.soinn.calculate_similarity_thresholds([0, 1]), [2, 1])
 
     def test_update_winner(self):
         self.soinn.winning_times[0] = 2 - 1
