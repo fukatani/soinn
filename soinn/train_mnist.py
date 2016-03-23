@@ -1,4 +1,6 @@
-# Example script for clastering MNIST using soinn.
+# This is a example script for clastering MNIST using soinn.
+# Learning and evaluate learn result.
+# If the same number in the same cluster is a lot, the result is precise.
 #
 # Copyright (c) 2016 Ryosuke Fukatani
 # This software is released under the MIT License.
