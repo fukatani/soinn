@@ -156,34 +156,11 @@ class Soinn(object):
         self.nodes = np.delete(self.nodes, indexes, 0)
         remained_indexes = list(set([i for i in range(n)]) - set(indexes))
         self.winning_times = [self.winning_times[i] for i in remained_indexes]
-        self.adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
         #_old_ver_adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
-        #self.__update_adjacent_mat(indexes, n, len(remained_indexes))
-        #self.__update_adjacent_mat2(indexes, n, len(remained_indexes))
-        #assert (_old_ver_adjacent_mat == self.adjacent_mat).all()
+        self.__update_adjacent_mat(indexes, n, len(remained_indexes))
+        #assert (_old_ver_adjacent_mat.toarray() == self.adjacent_mat.toarray()).all()
 
     def __update_adjacent_mat(self, indexes, prev_n, next_n):
-        while indexes:
-            next_adjacent_mat = dok_matrix((prev_n, prev_n))
-            for key1, key2 in self.adjacent_mat.keys():
-                if key1 == indexes[0] or key2 == indexes[0]:
-                    continue
-                if key1 > indexes[0]:
-                    new_key1 = key1 - 1
-                else:
-                    new_key1 = key1
-                if key2 > indexes[0]:
-                    new_key2 = key2 - 1
-                else:
-                    new_key2 = key2
-                next_adjacent_mat[new_key1, new_key2] = self.adjacent_mat[key1, key2]
-            self.adjacent_mat = next_adjacent_mat.copy()
-            indexes = [i-1 for i in indexes]
-            indexes.pop(0)
-        self.adjacent_mat.resize((next_n, next_n))
-
-
-    def __update_adjacent_mat2(self, indexes, prev_n, next_n):
         while indexes:
             next_adjacent_mat = dok_matrix((prev_n, prev_n))
             for key1, key2 in self.adjacent_mat.keys():
