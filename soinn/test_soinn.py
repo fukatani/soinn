@@ -128,14 +128,28 @@ class TestSoinn(unittest.TestCase):
         np.testing.assert_array_equal(self.soinn.adjacent_mat.toarray(), expected)
 
     def test_delete_noise_nodes(self):
-        self.soinn.adjacent_mat[0, 2:] = 1
-        self.soinn.adjacent_mat[2:, 0] = 1
+        self.soinn.adjacent_mat[0, 2] = 1
+        self.soinn.adjacent_mat[0, 3] = 2
+        self.soinn.adjacent_mat[2, 0] = 1
+        self.soinn.adjacent_mat[3, 0] = 2
         self.soinn.winning_times = [2, 1, 2, 1]
         self.soinn._Soinn__delete_noise_nodes()
         np.testing.assert_array_equal(self.soinn.nodes, [[0, 0], [1, 1], [0, 1]])
         self.assertEqual(self.soinn.winning_times, [2, 2, 1])
-        expected = [[0, 1, 1], [1, 0, 0], [1, 0, 0]]
+        expected = [[0, 1, 2], [1, 0, 0], [2, 0, 0]]
         np.testing.assert_array_equal(self.soinn.adjacent_mat.toarray(), expected)
+
+##    def test_delete_noise_nodes2(self):
+##        self.soinn.adjacent_mat[0, 1] = 1
+##        self.soinn.adjacent_mat[0, 3] = 2
+##        self.soinn.adjacent_mat[1, 0] = 1
+##        self.soinn.adjacent_mat[3, 0] = 2
+##        self.soinn.winning_times = [3, 1, 2, 1]
+##        self.soinn._Soinn__delete_noise_nodes()
+##        np.testing.assert_array_equal(self.soinn.nodes, [[0, 0], [1, 1], [0, 1]])
+##        self.assertEqual(self.soinn.winning_times, [2, 2, 1])
+##        expected = [[0, 1, 1], [1, 0, 0], [1, 0, 0]]
+##        np.testing.assert_array_equal(self.soinn.adjacent_mat.toarray(), expected)
 
     def test_find_nearest_nodes(self):
         signal = np.array([-1, 0])
