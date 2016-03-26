@@ -71,7 +71,7 @@ def draw_digit(data, n, row, col, title):
 
 if __name__ == '__main__':
     dataset = prepare_dataset()
-    N_TRAIN = 4000
+    N_TRAIN = 5000
     delete_node_period = 100
     max_edge_age = 30
     x_train, y_train, x_test, y_test = split_dataset(dataset, N_TRAIN)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                         max_edge_age=max_edge_age)
         learning(soinn_i, x_train, y_train)
     evaluate(soinn_i, x_test, y_test)
-    visualise(soinn_i.nodes)
+    #visualise(soinn_i.nodes)
     soinn_i.print_info()
     soinn_i.save(dumpfile)
 

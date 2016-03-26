@@ -155,17 +155,62 @@ class Soinn(object):
         n = len(self.winning_times)
         self.nodes = np.delete(self.nodes, indexes, 0)
         remained_indexes = list(set([i for i in range(n)]) - set(indexes))
-        if indexes:
-            self.winning_times = [self.winning_times[i] for i in remained_indexes]
-            self.adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
+        self.winning_times = [self.winning_times[i] for i in remained_indexes]
+        self.adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
+        #_old_ver_adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
+        #self.__update_adjacent_mat(indexes, n, len(remained_indexes))
+        #self.__update_adjacent_mat2(indexes, n, len(remained_indexes))
+        #assert (_old_ver_adjacent_mat == self.adjacent_mat).all()
+
+    def __update_adjacent_mat(self, indexes, prev_n, next_n):
+        while indexes:
+            next_adjacent_mat = dok_matrix((prev_n, prev_n))
+            for key1, key2 in self.adjacent_mat.keys():
+                if key1 == indexes[0] or key2 == indexes[0]:
+                    continue
+                if key1 > indexes[0]:
+                    new_key1 = key1 - 1
+                else:
+                    new_key1 = key1
+                if key2 > indexes[0]:
+                    new_key2 = key2 - 1
+                else:
+                    new_key2 = key2
+                next_adjacent_mat[new_key1, new_key2] = self.adjacent_mat[key1, key2]
+            self.adjacent_mat = next_adjacent_mat.copy()
+            indexes = [i-1 for i in indexes]
+            indexes.pop(0)
+        self.adjacent_mat.resize((next_n, next_n))
+
+
+    def __update_adjacent_mat2(self, indexes, prev_n, next_n):
+        while indexes:
+            next_adjacent_mat = dok_matrix((prev_n, prev_n))
+            for key1, key2 in self.adjacent_mat.keys():
+                if key1 == indexes[0] or key2 == indexes[0]:
+                    continue
+                if key1 > indexes[0]:
+                    new_key1 = key1 - 1
+                else:
+                    new_key1 = key1
+                if key2 > indexes[0]:
+                    new_key2 = key2 - 1
+                else:
+                    new_key2 = key2
+                #dok_matrix.__getitem__ is slow.
+                #So access as dictionary
+                next_adjacent_mat[new_key1, new_key2] = super(dok_matrix, self.adjacent_mat).__getitem__((key1, key2))
+            self.adjacent_mat = next_adjacent_mat.copy()
+            indexes = [i-1 for i in indexes]
+            indexes.pop(0)
+        self.adjacent_mat.resize((next_n, next_n))
 
     def __delete_nodes2(self, indexes):
         n = len(self.winning_times)
         self.nodes = np.delete(self.nodes, indexes, 0)
         remained_indexes = list(set([i for i in range(n)]) - set(indexes))
-        if indexes:
-            self.winning_times = [self.winning_times[i] for i in remained_indexes]
-            self.adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
+        self.winning_times = [self.winning_times[i] for i in remained_indexes]
+        self.adjacent_mat = self.adjacent_mat[np.ix_(remained_indexes, remained_indexes)]
 
     def __delete_noise_nodes(self):
         n = len(self.winning_times)
@@ -173,7 +218,8 @@ class Soinn(object):
         for i in range(n):
             if len(self.adjacent_mat[i, :]) < self.min_degree:
                 noise_indexes.append(i)
-        self.__delete_nodes(noise_indexes)
+        if noise_indexes:
+            self.__delete_nodes(noise_indexes)
 
     def print_info(self):
         print('Total Nodes: {0}'.format(len(self.nodes)))
