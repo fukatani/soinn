@@ -10,6 +10,8 @@ Thanks for Nakamura-san!
 * Appended MNIST clastering Example.
 * Corresponding to Python 3.4
 
+![SOINN](https://github.com/fukatani/soinn/blob/master/example.png)
+
 Software Requirements
 ==============================
 * Python (3.4 or later)
